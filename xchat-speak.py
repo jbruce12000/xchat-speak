@@ -7,7 +7,7 @@ import os
 import time
 import atexit
 import signal
-#import xchat
+import xchat
 import string
 
 class festival:
@@ -66,8 +66,9 @@ class festival:
 		
 	def say(self,text):
 		"Speak string 'text'."
+                self.open()
 		self.sock.send('(SayText "%s")'%text)
-		self._checkresp()
+		#self._checkresp()
 		
 	def sayfile(self,filename):
 		"""Speak contents of file 'filename'.
@@ -121,19 +122,19 @@ class festival:
 
 	#__del__=self.close()
 
-f = festival()
-f.say("hello")
+#f = festival()
+#f.say("hello")
 
-#def chat_hook(word, word_eol, userdata):
-#        XCHAT_FESTIVAL.open().say(' '.join(word[3:]))
-#        xchat.prnt("This is word: " + `word`)
-#        return xchat.EAT_NONE
-#
-#global XCHAT_FESTIVAL
-#XCHAT_FESTIVAL=festival.open()
+def chat_hook(word, word_eol, userdata):
+        XCHAT_FESTIVAL.say(' '.join(word[3:]))
+        xchat.prnt("This is word: " + `word`)
+        return xchat.EAT_NONE
+
+global XCHAT_FESTIVAL
+XCHAT_FESTIVAL=festival()
 
 
-#xchat.hook_server("PRIVMSG", chat_hook)
+xchat.hook_server("PRIVMSG", chat_hook)
 
-# load /home/jbruce/tmp/xchat-speak/xchat-speak.py
-# unload /home/jbruce/tmp/xchat-speak/xchat-speak.py
+# /load /home/jbruce/tmp/xchat-speak/xchat-speak.py
+# /unload /home/jbruce/tmp/xchat-speak/xchat-speak.py
