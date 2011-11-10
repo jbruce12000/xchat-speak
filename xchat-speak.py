@@ -7,14 +7,14 @@ import os
 import time
 import atexit
 import signal
-import xchat
+#import xchat
 import string
 
 class festival:
-	"Festival connection object, as returned by festival.open()."
+	"Festival object"
 	
-	def __init__(self,sock):
-		self.sock=sock
+	def __init__(self):
+		self.sock = self.open()
 		
 	def _checkresp(self):
 		if self.sock.recv(256)=='ER\n':
@@ -66,7 +66,6 @@ class festival:
 		
 	def say(self,text):
 		"Speak string 'text'."
-		
 		self.sock.send('(SayText "%s")'%text)
 		self._checkresp()
 		
@@ -82,8 +81,6 @@ class festival:
 	def close(self):
 		"Terminate the Festival connection."
 		self.sock.send('(quit)')
-		
-	__del__=close
 
         def open(self,host='',port=1314,nostart=False):
         	"""Opens a new connection to a Festival server.
@@ -104,7 +101,7 @@ class festival:
 	        		raise socket.error
 	        	else:
                                 festival_pid = Popen(["festival", "--server"],stdout=3,stderr=STDOUT).pid 
-		        	atexit.register(_kill_server)
+		        	atexit.register(self._kill_server)
 		        	for t in xrange(20):
 		        		try:
 		        			time.sleep(.25)
@@ -116,21 +113,27 @@ class festival:
 		        	else:
 		        		raise socket.error
 		
-	        return festival(sock)
+	        self.sock = sock
+                return sock
 
         def _kill_server():
         	os.kill(festival_pid,signal.SIGTERM)
 
-def chat_hook(word, word_eol, userdata):
-        XCHAT_FESTIVAL.open().say(' '.join(word[3:]))
-        xchat.prnt("This is word: " + `word`)
-        return xchat.EAT_NONE
+	#__del__=self.close()
 
-global XCHAT_FESTIVAL
-XCHAT_FESTIVAL=festival.open()
+f = festival()
+f.say("hello")
+
+#def chat_hook(word, word_eol, userdata):
+#        XCHAT_FESTIVAL.open().say(' '.join(word[3:]))
+#        xchat.prnt("This is word: " + `word`)
+#        return xchat.EAT_NONE
+#
+#global XCHAT_FESTIVAL
+#XCHAT_FESTIVAL=festival.open()
 
 
-xchat.hook_server("PRIVMSG", chat_hook)
+#xchat.hook_server("PRIVMSG", chat_hook)
 
 # load /home/jbruce/tmp/xchat-speak/xchat-speak.py
 # unload /home/jbruce/tmp/xchat-speak/xchat-speak.py
