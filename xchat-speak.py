@@ -1,13 +1,14 @@
-"""PyFest, a simple Python interface to the Festival speech server.
-
-PyFest is currently limited to speaking strings and files. Nothing fancy has
-been implemented yet."""
+__module_name__ = "xchat-speak"
+__module_version__ = "1.0"
+__module_description__ = "speak using festival"
 
 import socket
 import os
 import time
 import atexit
 import signal
+import xchat
+import string
 
 class festival:
 	"Festival connection object, as returned by festival.open()."
@@ -84,40 +85,52 @@ class festival:
 		
 	__del__=close
 
-def open(host='',port=1314,nostart=False):
-	"""Opens a new connection to a Festival server.
+        def open(self,host='',port=1314,nostart=False):
+        	"""Opens a new connection to a Festival server.
 	
-	Attempts to connect to a Festival server (most likely started with
-	'festival --server'). Will attempt to start a local server on port
-	1314 if one is not running and the 'nostart' flag is not set to
-	True. Returns a festival.festival object."""
+        	Attempts to connect to a Festival server (most likely started with
+        	'festival --server'). Will attempt to start a local server on port
+        	1314 if one is not running and the 'nostart' flag is not set to
+        	True. Returns a festival.festival object."""
 	
-	global festival_pid
-        from subprocess import STDOUT, Popen
+        	global festival_pid
+                from subprocess import STDOUT, Popen
 	
-	sock=socket.socket(socket.AF_INET,socket.SOCK_STREAM)
-	try:
-		sock.connect((host,port))
-	except socket.error:
-		if nostart:
-			raise socket.error
-		else:
-                        festival_pid = Popen(["festival", "--server"],stdout=3,stderr=STDOUT).pid 
-			#festival_pid=os.spawnlp(os.P_NOWAIT,'festival','festival','--server' )
-			atexit.register(_kill_server)
-			for t in xrange(20):
-				try:
-					time.sleep(.25)
-					sock.connect((host,port))
-				except socket.error:
-					pass
-				else:
-					break
-			else:
-				raise socket.error
+	        sock=socket.socket(socket.AF_INET,socket.SOCK_STREAM)
+	        try:
+	        	sock.connect((host,port))
+	        except socket.error:
+	        	if nostart:
+	        		raise socket.error
+	        	else:
+                                festival_pid = Popen(["festival", "--server"],stdout=3,stderr=STDOUT).pid 
+		        	atexit.register(_kill_server)
+		        	for t in xrange(20):
+		        		try:
+		        			time.sleep(.25)
+		        			sock.connect((host,port))
+		        		except socket.error:
+		        			pass
+		        		else:
+		        			break
+		        	else:
+		        		raise socket.error
 		
-	return festival(sock)
+	        return festival(sock)
 
-def _kill_server():
-	os.kill(festival_pid,signal.SIGTERM)
-	
+        def _kill_server():
+        	os.kill(festival_pid,signal.SIGTERM)
+
+def chat_hook(word, word_eol, userdata):
+        XCHAT_FESTIVAL.open().say(' '.join(word[3:]))
+        xchat.prnt("This is word: " + `word`)
+        return xchat.EAT_NONE
+
+global XCHAT_FESTIVAL
+XCHAT_FESTIVAL=festival.open()
+
+
+xchat.hook_server("PRIVMSG", chat_hook)
+
+# load /home/jbruce/tmp/xchat-speak/xchat-speak.py
+# unload /home/jbruce/tmp/xchat-speak/xchat-speak.py
