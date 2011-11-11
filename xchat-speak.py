@@ -125,6 +125,7 @@ class festival:
 class wordcleanser:
   def __init__(self):
     self.abbr = {'..' : '\,',
+        '^' : 'look up',
         '...' : '\,',
         '2nd' : 'second',
         '31337' : 'eleet',
