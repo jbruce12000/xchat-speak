@@ -68,6 +68,7 @@ class festival:
 		"Speak string 'text'."
                 self.open()
 		self.sock.send('(SayText "%s")'%text)
+                # this makes xchat block while speaking. bad.
 		#self._checkresp()
 		
 	def sayfile(self,filename):
@@ -101,7 +102,8 @@ class festival:
 	        	if nostart:
 	        		raise socket.error
 	        	else:
-                                festival_pid = Popen(["festival", "--server"],stdout=3,stderr=STDOUT).pid 
+                                #festival_pid = Popen(["festival", "--server"],stdout=3,stderr=STDOUT).pid 
+                                festival_pid = Popen(["festival", "--server"]).pid 
 		        	atexit.register(self._kill_server)
 		        	for t in xrange(20):
 		        		try:
@@ -1247,15 +1249,16 @@ class wordcleanser:
        cleaned.append(word)
      return cleaned
 
-
 def chat_hook(word, word_eol, userdata):
-        words = wordcleanser().clean(word[3:])
-        XCHAT_FESTIVAL.say(' '.join(words))
         #xchat.prnt("This is word: " + `word`)
+        words = wordcleanser().clean(word[3:])
+        #xchat.prnt("This is words: " + `words`)
+        XCHAT_FESTIVAL.say(' '.join(words))
         return xchat.EAT_NONE
 
 global XCHAT_FESTIVAL
 XCHAT_FESTIVAL=festival()
+XCHAT_FESTIVAL.say('speech activated')
 xchat.hook_server("PRIVMSG", chat_hook)
 
 # /load /home/jbruce/tmp/xchat-speak/xchat-speak.py
