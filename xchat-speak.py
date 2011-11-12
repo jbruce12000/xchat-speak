@@ -15,6 +15,7 @@ class festival:
 	
 	def __init__(self):
 		self.sock = self.open()
+                self.festival_pid = 0
 		
 	def _checkresp(self):
 		if self.sock.recv(256)=='ER\n':
@@ -92,7 +93,6 @@ class festival:
         	1314 if one is not running and the 'nostart' flag is not set to
         	True. Returns a festival.festival object."""
 	
-        	global festival_pid
                 from subprocess import STDOUT, Popen
 	
 	        sock=socket.socket(socket.AF_INET,socket.SOCK_STREAM)
@@ -102,8 +102,7 @@ class festival:
 	        	if nostart:
 	        		raise socket.error
 	        	else:
-                                #festival_pid = Popen(["festival", "--server"],stdout=3,stderr=STDOUT).pid 
-                                festival_pid = Popen(["festival", "--server"]).pid 
+                                self.festival_pid = Popen(["festival", "--server"]).pid 
 		        	atexit.register(self._kill_server)
 		        	for t in xrange(20):
 		        		try:
@@ -119,8 +118,8 @@ class festival:
 	        self.sock = sock
                 return sock
 
-        def _kill_server():
-        	os.kill(festival_pid,signal.SIGTERM)
+        def _kill_server(self):
+        	os.kill(self.festival_pid,signal.SIGTERM)
 
 class wordcleanser:
   def __init__(self):
@@ -1250,19 +1249,35 @@ class wordcleanser:
        cleaned.append(word)
      return cleaned
 
+def speechon(word, word_eol, userdata):
+    SPEAK=True
+    XCHAT_FESTIVAL.say('speech activated')
+    return xchat.EAT_ALL
+
+def speechoff(word, word_eol, userdata):
+    SPEAK=False
+    XCHAT_FESTIVAL.say('speech disabled')
+    return xchat.EAT_ALL
+
 def chat_hook(word, word_eol, userdata):
         #xchat.prnt("This is word: " + `word`)
+        #xchat.prnt("This is word_eol: " + `word_eol`)
         words = wordcleanser().clean(word[3:])
         #xchat.prnt("This is words: " + `words`)
-        XCHAT_FESTIVAL.say(' '.join(words))
+        if SPEAK:
+            XCHAT_FESTIVAL.say(' '.join(words))
         return xchat.EAT_NONE
 
+global SPEAK
+SPEAK=True
 global XCHAT_FESTIVAL
 XCHAT_FESTIVAL=festival()
-XCHAT_FESTIVAL.say('speech activated')
+xchat.hook_command("speechon", speechon, help="/speechon Turn on speech") 
+xchat.hook_command("speechoff", speechoff, help="/speechoff Turn off speech") 
 xchat.hook_server("PRIVMSG", chat_hook)
+xchat.command('speechon')
 
-# /load /home/jbruce/tmp/xchat-speak/xchat-speak.py
-# /unload /home/jbruce/tmp/xchat-speak/xchat-speak.py
+# /load xchat-speak.py
+# /unload xchat-speak.py
 
 
