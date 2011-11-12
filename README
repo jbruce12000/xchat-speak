@@ -12,3 +12,6 @@ COMMANDS IN XCHAT
 
 /speechon will turn speech on
 /speechoff will turn speech off
+
+BUGS
+- had lots of aplay processes build up at start, one for each message
