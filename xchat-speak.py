@@ -1250,11 +1250,13 @@ class wordcleanser:
      return cleaned
 
 def speechon(word, word_eol, userdata):
+    global SPEAK
     SPEAK=True
     XCHAT_FESTIVAL.say('speech activated')
     return xchat.EAT_ALL
 
 def speechoff(word, word_eol, userdata):
+    global SPEAK
     SPEAK=False
     XCHAT_FESTIVAL.say('speech disabled')
     return xchat.EAT_ALL
@@ -1264,12 +1266,12 @@ def chat_hook(word, word_eol, userdata):
         #xchat.prnt("This is word_eol: " + `word_eol`)
         words = wordcleanser().clean(word[3:])
         #xchat.prnt("This is words: " + `words`)
+        print "SPEAK:%s" % SPEAK
         if SPEAK:
             XCHAT_FESTIVAL.say(' '.join(words))
         return xchat.EAT_NONE
 
-global SPEAK
-SPEAK=True
+# fix find a way to remove use of globals
 global XCHAT_FESTIVAL
 XCHAT_FESTIVAL=festival()
 xchat.hook_command("speechon", speechon, help="/speechon Turn on speech") 
