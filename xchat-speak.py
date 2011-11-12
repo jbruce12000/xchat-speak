@@ -1266,7 +1266,6 @@ def chat_hook(word, word_eol, userdata):
         #xchat.prnt("This is word_eol: " + `word_eol`)
         words = wordcleanser().clean(word[3:])
         #xchat.prnt("This is words: " + `words`)
-        print "SPEAK:%s" % SPEAK
         if SPEAK:
             XCHAT_FESTIVAL.say(' '.join(words))
         return xchat.EAT_NONE
