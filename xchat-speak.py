@@ -347,6 +347,7 @@ class wordcleanser:
         'yiwgp' : 'yes, i will go private',
         'ymmv' : 'your mileage may vary',
         'yt' : 'are you there',
+        'y/t' : 'are you there',
         'Ameria' : 'America',
         'I\"m' : 'I\'m',
         'I\;d' : 'I\'d',
@@ -1250,12 +1251,14 @@ class wordcleanser:
      return cleaned
 
 def speechon(word, word_eol, userdata):
+    "/speechon hook"
     global SPEAK
     SPEAK=True
     XCHAT_FESTIVAL.say('speech activated')
     return xchat.EAT_ALL
 
 def speechoff(word, word_eol, userdata):
+    "/speechoff hook"
     global SPEAK
     SPEAK=False
     XCHAT_FESTIVAL.say('speech disabled')
