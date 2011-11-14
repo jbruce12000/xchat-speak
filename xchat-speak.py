@@ -1255,6 +1255,7 @@ def speechon(word, word_eol, userdata):
     global SPEAK
     SPEAK=True
     XCHAT_FESTIVAL.say('speech activated')
+    xchat.prnt("speech activated")
     return xchat.EAT_ALL
 
 def speechoff(word, word_eol, userdata):
@@ -1262,6 +1263,7 @@ def speechoff(word, word_eol, userdata):
     global SPEAK
     SPEAK=False
     XCHAT_FESTIVAL.say('speech disabled')
+    xchat.prnt("speech disabled")
     return xchat.EAT_ALL
 
 def chat_hook(word, word_eol, userdata):
