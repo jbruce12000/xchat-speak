@@ -181,6 +181,7 @@ class wordcleanser:
         'esad' : 'eat shit and die',
         'f2f' : 'face to face',
         'fcfs' : 'first come, first served',
+        'fe' : 'front end',
         'fitb' : 'fill in the blank',
         'flyaway' : 'fly away',
         'foad' : 'feck off and die',
@@ -285,6 +286,7 @@ class wordcleanser:
         'ppl' : 'people',
 	'pstn' : 'p s t n',
         'ptmm' : 'please tell me more',
+        'qa' : 'quality assurance',
         'quazwork' : 'quaz-work',
         'r u there?' : 'are you there?',
         're' : 'regreet',
@@ -1266,20 +1268,45 @@ def speechoff(word, word_eol, userdata):
     xchat.prnt("speech disabled")
     return xchat.EAT_ALL
 
+def channelon(word, word_eol, userdata):
+    "/channelon hook"
+    global SPEAK_CHANNEL
+    SPEAK_CHANNEL = xchat.get_info('channel')
+    XCHAT_FESTIVAL.say('speaking %s channel only' % SPEAK_CHANNEL)
+    xchat.prnt("speaking %s channel only" % SPEAK_CHANNEL)
+    return xchat.EAT_ALL
+
+def channeloff(word, word_eol, userdata):
+    "/channeloff hook"
+    global SPEAK_CHANNEL
+    SPEAK_CHANNEL=False
+    XCHAT_FESTIVAL.say('speaking all channels')
+    xchat.prnt("speaking all channels")
+    return xchat.EAT_ALL
+
 def chat_hook(word, word_eol, userdata):
         #xchat.prnt("This is word: " + `word`)
         #xchat.prnt("This is word_eol: " + `word_eol`)
         words = wordcleanser().clean(word[3:])
         #xchat.prnt("This is words: " + `words`)
         if SPEAK:
+            if SPEAK_CHANNEL:
+                if SPEAK_CHANNEL == word[2]:
+                    XCHAT_FESTIVAL.say(' '.join(words))
+                return xchat.EAT_NONE
             XCHAT_FESTIVAL.say(' '.join(words))
         return xchat.EAT_NONE
 
 # fix find a way to remove use of globals
 global XCHAT_FESTIVAL
 XCHAT_FESTIVAL=festival()
+global SPEAK_CHANNEL
+SPEAK_CHANNEL=False
+
 xchat.hook_command("speechon", speechon, help="/speechon Turn on speech") 
 xchat.hook_command("speechoff", speechoff, help="/speechoff Turn off speech") 
+xchat.hook_command("channelon", channelon, help="/channelon Speak current channel only") 
+xchat.hook_command("channeloff", channeloff, help="/channeloff Speak all channels") 
 xchat.hook_server("PRIVMSG", chat_hook)
 xchat.command('speechon')
 
