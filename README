@@ -10,8 +10,10 @@ if two folks post at the same time, both are spoken concurrently.
 
 COMMANDS IN XCHAT
 
-/speechon will turn speech on
-/speechoff will turn speech off
+/speechon = turn speech on
+/speechoff = turn speech off
+/channelon = speak the current channel only
+/channeloff = speak all channels
 
 BUGS
-- had lots of aplay processes build up at start, one for each message
+- had lots of aplay processes build up at start once, one for each message
